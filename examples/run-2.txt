@@ -1,0 +1,56 @@
+# python3 cli.py --url 'https://example.com/' --attacker-origin 'https://attacker.example' --no-poc
+
+════════════════════════════════════════════════════════════════
+corsbake  https://example.com/
+════════════════════════════════════════════════════════════════
+
+  target           https://example.com/
+  attacker origin  https://attacker.example
+  victim auth      (none)
+  exfil sink       (none, output stays in browser)
+
+▢ exact-origin reflection
+     origin sent     https://attacker.example
+     the textbook misconfig: server reflects the requesting Origin verbatim
+     ACAO returned   (none)
+     ACAC returned   (none)
+     verdict         safe  safe (acao=(none), acac=no)
+
+▢ null origin
+     origin sent     null
+     sandboxed iframe / redirect / file:// page sends Origin: null
+     ACAO returned   (none)
+     ACAC returned   (none)
+     verdict         safe  safe (acao=(none), acac=no)
+
+▢ wildcard with credentials
+     origin sent     https://random.example
+     ACAO=* with ACAC=true is a spec-banned combo browsers will reject, but plenty of clients honor it
+     ACAO returned   (none)
+     ACAC returned   (none)
+     verdict         safe  safe (acao=(none), acac=no)
+
+▢ scheme downgrade
+     origin sent     http://attacker.example
+     server allows http origin while target is https; MITM attack vector
+     ACAO returned   (none)
+     ACAC returned   (none)
+     verdict         safe  safe (acao=(none), acac=no)
+
+▢ suffix bypass
+     origin sent     https://example.com.attacker.example
+     regex like ^https://victim\.com checks suffix and accepts attacker-controlled host
+     ACAO returned   (none)
+     ACAC returned   (none)
+     verdict         safe  safe (acao=(none), acac=no)
+
+▢ subdomain wildcard
+     origin sent     https://evil.example.com
+     any-subdomain wildcard accepted as if it were a trusted subdomain
+     ACAO returned   (none)
+     ACAC returned   (none)
+     verdict         safe  safe (acao=(none), acac=no)
+
+════════════════════════════════════════════════════════════════
+  no exploitable misconfig observed against example.com
+════════════════════════════════════════════════════════════════
