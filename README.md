@@ -112,7 +112,7 @@ local, state, or federal law.
 
 ## Author
 
-Written by **Daniyal Nasir**, a **Cybersecurity Consultant**, **Penetration Tester**, and **VAPT Services** provider based in **Doha, Qatar**, with over a decade of **offensive security** work covering **web application security testing**, **API penetration testing**, **cloud security audits**, **mobile app security assessments**, and **red team operations** for Fortune 500 clients and global tech platforms. Maintains an active **bug bounty hunting** portfolio with **responsible vulnerability disclosure** to leading tech companies. Industry certifications: **OSCP**, **LPT**, **CPENT**, **CEH**, **CISA**, **CISM**, **CASP+**.
+Written by **Daniyal Nasir**, a **Cybersecurity Consultant**, **Penetration Tester**, and **VAPT Services** provider with over a decade of **offensive security** work covering **web application security testing**, **API penetration testing**, **cloud security audits**, **mobile app security assessments**, and **red team operations** for Fortune 500 clients and global tech platforms. Maintains an active **bug bounty hunting** portfolio with **responsible vulnerability disclosure** to leading tech companies. Industry certifications: **OSCP**, **LPT**, **CPENT**, **CEH**, **CISA**, **CISM**, **CASP+**.
 
 Reach out: [LinkedIn](https://www.linkedin.com/in/daniyalnasir) · [daniyalnasir.com](https://www.daniyalnasir.com)
 
